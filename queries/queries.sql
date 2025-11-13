@@ -73,7 +73,7 @@ FROM persona p
 WHERE p.tipo = 'profesor' AND pr.id_departamento IS NULL;
 
 -- 12. Retorna un llistat amb els departaments que no tenen professors/es associats. (nombre)
-SELECT d.nombre AS departamento
+SELECT d.nombre
 FROM departamento d
 	LEFT JOIN profesor pr ON d.id = pr.id_departamento
 WHERE pr.id_profesor IS NULL;
@@ -91,7 +91,7 @@ FROM asignatura
 WHERE id_profesor IS NULL;
 
 -- 15. Retorna un llistat amb tots els departaments que no han impartit assignatures en cap curs escolar. (nombre)
-SELECT DISTINCT d.nombre AS departamento
+SELECT DISTINCT d.nombre
 FROM departamento d
 	LEFT JOIN profesor pr ON d.id = pr.id_departamento
     LEFT JOIN asignatura a ON pr.id_profesor = a.id_profesor
@@ -110,21 +110,17 @@ FROM persona
 WHERE tipo ='alumno' AND YEAR(fecha_nacimiento) = 1999; 
 
 -- 18. Calcula quants professors/es hi ha en cada departament. El resultat només ha de mostrar dues columnes, una amb el nom del departament i una altra amb el nombre de professors/es que hi ha en aquest departament. El resultat només ha d'incloure els departaments que tenen professors/es associats i haurà d'estar ordenat de major a menor pel nombre de professors/es. (departamento, total)
-SELECT d.nombre AS departamento, count(pr.id_profesor) AS total 
-FROM profesor pr
-	LEFT JOIN persona p ON pr.id_profesor = p.id 
-	LEFT JOIN departamento d ON pr.id_departamento = d.id
-WHERE pr.id_profesor IS NOT NULL
+SELECT d.nombre AS departamento, COUNT(pr.id_profesor) AS total
+FROM departamento d
+JOIN profesor pr ON d.id = pr.id_departamento
 GROUP BY d.nombre
-ORDER BY total DESC, p.nombre DESC;
+ORDER BY total DESC;
 
 -- 19. Retorna un llistat amb tots els departaments i el nombre de professors/es que hi ha en cadascun d'ells. Tingui en compte que poden existir departaments que no tenen professors/es associats. Aquests departaments també han d'aparèixer en el llistat. (departamento, total)
-SELECT d.nombre AS departamento, count(p.id) AS total 
+SELECT d.nombre AS departamento, COUNT(pr.id_profesor) AS total
 FROM departamento d
-	LEFT JOIN profesor pr ON d.id = pr.id_departamento
-    LEFT JOIN persona p ON pr.id_profesor = p.id
-GROUP BY departamento
-ORDER BY total DESC, departamento DESC;
+LEFT JOIN profesor pr ON d.id = pr.id_departamento
+GROUP BY d.id, d.nombre;
 
 -- 20. Retorna un llistat amb el nom de tots els graus existents en la base de dades i el nombre d'assignatures que té cadascun. Tingues en compte que poden existir graus que no tenen assignatures associades. Aquests graus també han d'aparèixer en el llistat. El resultat haurà d'estar ordenat de major a menor pel nombre d'assignatures. (grau, total)
 SELECT g.nombre AS grau, count(a.id) AS total 
